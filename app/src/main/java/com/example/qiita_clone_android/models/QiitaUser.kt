@@ -1,6 +1,9 @@
 package com.example.qiita_clone_android.models
 
+import com.google.gson.annotations.SerializedName
+
 data class QiitaUser(
     val id: String,
-    val profile_image_url: String
+    @SerializedName("profile_image_url")
+    val profileImageUrl: String
 )
