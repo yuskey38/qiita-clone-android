@@ -2,13 +2,12 @@ package com.example.qiita_clone_android.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import com.example.qiita_clone_android.R
-import com.example.qiita_clone_android.ui.articles.ArticlesFragment
+import com.example.qiita_clone_android.ui.articleList.ArticleListFragment
 
-class MainActivity : AppCompatActivity(), ArticlesFragment.ArticlesActions {
+class MainActivity : AppCompatActivity(), ArticleListFragment.ArticlesActions {
 
-    private var currentFragment: BaseFragment = ArticlesFragment()
+    private var currentFragment: BaseFragment = ArticleListFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
