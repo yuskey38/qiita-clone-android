@@ -1,11 +1,13 @@
 package com.example.qiita_clone_android.ui.articleList
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
@@ -21,6 +23,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setMenuVisibility(true)
         viewModel.fetchArticles()
     }
 
@@ -38,14 +41,37 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     }
 
     private fun initViews() {
+        setOptionsMenu()
         setRecyclerView()
     }
-
 
     private fun setObservers() {
         viewModel.articles.observe(viewLifecycleOwner) { articles ->
             updateArticles(articles)
         }
+    }
+
+    private fun setOptionsMenu() {
+        activity?.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.custom_menu, menu)
+                val searchView: SearchView = menu.findItem(R.id.action_search).actionView as SearchView
+                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextChange(newText: String): Boolean {
+                        viewModel.updateQuery(newText)
+                        return false
+                    }
+                    override fun onQueryTextSubmit(query: String): Boolean {
+                        viewModel.fetchArticles()
+                        return false
+                    }
+                })
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun setRecyclerView() {

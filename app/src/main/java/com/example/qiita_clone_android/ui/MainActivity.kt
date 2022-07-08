@@ -1,9 +1,10 @@
 package com.example.qiita_clone_android.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.ui.articleList.ArticleListFragment
+
 
 class MainActivity : AppCompatActivity(), ArticleListFragment.ArticlesActions {
 
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity(), ArticleListFragment.ArticlesActions {
 
         supportFragmentManager.addOnBackStackChangedListener {
             currentFragment = supportFragmentManager.findFragmentById(R.id.main_activity_content) as BaseFragment
+            setToolBar()
         }
     }
 
@@ -26,6 +28,12 @@ class MainActivity : AppCompatActivity(), ArticleListFragment.ArticlesActions {
             .replace(R.id.main_activity_content, currentFragment)
             .addToBackStack(null)
             .commit()
+        setToolBar()
+    }
+
+    private fun setToolBar() {
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.title = ""
     }
 
     override fun onTapArticle(url: String) {
