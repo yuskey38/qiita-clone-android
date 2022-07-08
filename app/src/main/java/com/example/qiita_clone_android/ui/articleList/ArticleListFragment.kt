@@ -1,16 +1,17 @@
 package com.example.qiita_clone_android.ui.articleList
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
 
-class ArticleListFragment : BaseFragment() {
+class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.ItemClickListener {
     private lateinit var binding: FragmentArticleListBinding
     private val viewModel: ArticleListViewModel by viewModels()
 
@@ -41,20 +42,30 @@ class ArticleListFragment : BaseFragment() {
     }
 
     private fun initViews() {
-        setListView()
+        setRecyclerView()
     }
 
-    private fun setListView() {
-        val listView = binding.articlesListView
+    private fun setRecyclerView() {
+        val recyclerView = binding.articleList
+        val adapter = ArticleAdapter(
+            binding.root.context,
+            this,
+            listOf()
+        )
+        val layoutManager =
+            LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
+
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = layoutManager
     }
 
     private fun updateArticles(articles: List<Article>) {
-        val adapter: ArrayAdapter<Article> = ArrayAdapter(
-            binding.root.context,
-            android.R.layout.simple_list_item_1,
-            articles
-        )
-        binding.articlesListView.adapter = adapter
+        val recyclerView = binding.articleList
+        val adapter = recyclerView.adapter as ArticleAdapter
+        adapter.updateArticles(articles)
     }
 
+    override fun onItemClick(view: View, position: Int) {
+        Log.v("onItemClick", position.toString())
+    }
 }
