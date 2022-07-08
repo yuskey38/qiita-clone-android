@@ -13,15 +13,22 @@ class MainActivity : AppCompatActivity(), ArticleListFragment.ArticlesActions {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.main_activity_content, currentFragment).commit()
+        transitionTo(currentFragment)
 
         supportFragmentManager.addOnBackStackChangedListener {
             currentFragment = supportFragmentManager.findFragmentById(R.id.main_activity_content) as BaseFragment
         }
     }
 
-    override fun getArticles() {}
+    private fun transitionTo(to: BaseFragment) {
+        currentFragment = to
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_activity_content, currentFragment)
+            .addToBackStack(null)
+            .commit()
+    }
 
-    override fun onTapArticle() {}
+    override fun onTapArticle(url: String) {
+        transitionTo(WebViewFragment.newInstance(url))
+    }
 }

@@ -53,7 +53,7 @@ class ArticleAdapter(
 
         mView.setOnClickListener { view ->
             mRecyclerView?.let {
-                itemClickListener.onItemClick(view, it.getChildAdapterPosition(view))
+                itemClickListener.onItemClick(view, _articles[it.getChildAdapterPosition(view)])
             }
         }
 
@@ -62,7 +62,7 @@ class ArticleAdapter(
 
     class RecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         interface ItemClickListener {
-            fun onItemClick(view: View, position: Int)
+            fun onItemClick(view: View, article: Article)
         }
 
         val imageView: ImageView = view.findViewById(R.id.article_user_image)

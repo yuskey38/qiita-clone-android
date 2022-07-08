@@ -10,14 +10,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
+import com.example.qiita_clone_android.ui.MainActivity
 
 class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.ItemClickListener {
     private lateinit var binding: FragmentArticleListBinding
     private val viewModel: ArticleListViewModel by viewModels()
 
     interface ArticlesActions {
-        fun getArticles()
-        fun onTapArticle()
+        fun onTapArticle(url: String)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +66,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         adapter.updateArticles(articles)
     }
 
-    override fun onItemClick(view: View, position: Int) {
-        Log.v("onItemClick", position.toString())
+    override fun onItemClick(view: View, article: Article) {
+        (activity as? MainActivity)?.onTapArticle(article.url)
     }
 }
