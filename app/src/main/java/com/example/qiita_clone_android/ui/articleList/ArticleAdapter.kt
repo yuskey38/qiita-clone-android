@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.models.Article
+import com.squareup.picasso.Picasso
 
 class ArticleAdapter(
     private val context: Context,
@@ -40,9 +41,9 @@ class ArticleAdapter(
 
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         holder.let {
-            it.imageView.setImageResource(R.mipmap.ic_launcher)
             it.titleText.text = _articles[position].title
             it.userIdText.text = _articles[position].user.id
+            Picasso.get().load(_articles[position].user.profileImageUrl).fit().centerCrop().into(it.imageView)
         }
     }
 

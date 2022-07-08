@@ -53,7 +53,8 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
             listOf()
         )
         val layoutManager =
-            LinearLayoutManager(binding.root.context, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(
+                binding.root.context, LinearLayoutManager.VERTICAL, false)
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = layoutManager
