@@ -1,7 +1,6 @@
 package com.example.qiita_clone_android.ui.articleList
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +21,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.fetchArticles(1)
+        viewModel.fetchArticles()
     }
 
     override fun onCreateView(
@@ -33,10 +32,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         binding = FragmentArticleListBinding.inflate(inflater)
 
         initViews()
-
-        viewModel.articles.observe(viewLifecycleOwner) { articles ->
-            updateArticles(articles)
-        }
+        setObservers()
 
         return binding.root
     }
@@ -45,7 +41,16 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         setRecyclerView()
     }
 
+
+    private fun setObservers() {
+        viewModel.articles.observe(viewLifecycleOwner) { articles ->
+            updateArticles(articles)
+        }
+    }
+
     private fun setRecyclerView() {
+        setPullToRefresh()
+
         val recyclerView = binding.articleList
         val adapter = ArticleAdapter(
             binding.root.context,
@@ -58,6 +63,14 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = layoutManager
+    }
+
+    private fun setPullToRefresh() {
+        val refresh = binding.refreshContainer
+        refresh.setOnRefreshListener {
+            viewModel.fetchArticles()
+            refresh.isRefreshing = false
+        }
     }
 
     private fun updateArticles(articles: List<Article>) {

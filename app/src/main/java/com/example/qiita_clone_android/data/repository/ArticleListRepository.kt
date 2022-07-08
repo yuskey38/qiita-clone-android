@@ -6,9 +6,9 @@ import com.example.qiita_clone_android.models.Article
 import retrofit2.Response
 
 class ArticleListRepository {
-    fun fetchArticles(page: Int): List<Article> {
+    fun fetchArticles(query: String?): List<Article> {
         return retrofit.create(ApiRequest::class.java)
-            .fetchArticles(page, 20)
+            .fetchArticles(1, 20, query)
             .execute()
             .body() ?: listOf()
     }

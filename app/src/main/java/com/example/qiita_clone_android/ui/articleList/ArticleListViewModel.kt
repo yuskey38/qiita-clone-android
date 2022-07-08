@@ -13,16 +13,22 @@ class ArticleListViewModel : ViewModel() {
     private val repository = ArticleListRepository()
 
     init {
-        fetchArticles(1)
+        fetchArticles()
     }
 
     private var _articles = MutableLiveData<List<Article>>()
     val articles: LiveData<List<Article>>
         get() = _articles
 
-    fun fetchArticles(page: Int) {
+    private var query: String? = null
+
+    fun fetchArticles() {
         viewModelScope.launch(Dispatchers.IO) {
-            _articles.postValue(repository.fetchArticles(page))
+            _articles.postValue(repository.fetchArticles(query))
         }
+    }
+
+    fun updateQuery(query: String) {
+        this.query = query
     }
 }

@@ -8,9 +8,10 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiRequest {
-    @GET("/api/v2//items")
+    @GET("/api/v2/items")
     fun fetchArticles(
         @Query("page") page: Int,
         @Query("per_page") perPage: Int,
+        @Query("query") query: String?,
     ): Call<List<Article>>
 }
