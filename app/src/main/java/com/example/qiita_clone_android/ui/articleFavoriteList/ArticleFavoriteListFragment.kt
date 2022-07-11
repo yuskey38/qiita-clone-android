@@ -14,17 +14,14 @@ class ArticleFavoriteListFragment : BaseFragment(), ArticleFavoriteAdapter.Recyc
     private lateinit var binding: FragmentArticleListBinding
     private val viewModel: ArticleFavoriteListViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.loadArticles()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentArticleListBinding.inflate(inflater)
+
+        viewModel.loadArticles()
 
         initViews()
         setObservers()
@@ -34,6 +31,9 @@ class ArticleFavoriteListFragment : BaseFragment(), ArticleFavoriteAdapter.Recyc
 
     private fun initViews() {
         setRecyclerView()
+
+        val activity = activity as? MainActivity ?: return
+        activity.supportActionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     private fun setObservers() {

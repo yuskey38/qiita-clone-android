@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
 import com.example.qiita_clone_android.databinding.FragmentWebViewBinding
+import com.example.qiita_clone_android.ui.articleList.ArticleListFragment
 
 class WebViewFragment : BaseFragment() {
 
@@ -39,6 +40,8 @@ class WebViewFragment : BaseFragment() {
 
     private fun setOptionsMenu() {
         val activity = activity as? MainActivity ?: return
+        activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         activity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.webview_menu, menu)
@@ -48,6 +51,7 @@ class WebViewFragment : BaseFragment() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when(menuItem.itemId) {
+                    android.R.id.home -> parentFragmentManager.popBackStack()
                     R.id.action_favorite -> onTapFavorite(menuItem)
                 }
                 return false

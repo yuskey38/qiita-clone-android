@@ -59,7 +59,10 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     }
 
     private fun setOptionsMenu() {
-        activity?.addMenuProvider(object : MenuProvider {
+        val activity = activity as? MainActivity ?: return
+        activity.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
+        activity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.article_list_menu, menu)
                 val searchView: SearchView = menu.findItem(R.id.action_search).actionView as SearchView

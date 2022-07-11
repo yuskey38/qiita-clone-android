@@ -1,6 +1,7 @@
 package com.example.qiita_clone_android.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qiita_clone_android.R
@@ -27,8 +28,10 @@ class MainActivity : AppCompatActivity(),
 
     private fun transitionTo(to: BaseFragment) {
         viewModel.setCurrentFragment(to)
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_activity_content, viewModel.currentFragment)
+            .addToBackStack(null)
             .commit()
     }
 
@@ -45,6 +48,12 @@ class MainActivity : AppCompatActivity(),
     private fun setBottomNavView() {
         val bottomNavView: BottomNavigationView = findViewById(R.id.bottom_nav_bar)
         bottomNavView.setOnItemSelectedListener { item ->
+            var count = supportFragmentManager.backStackEntryCount
+            while (count > 1) {
+                supportFragmentManager.popBackStack()
+                count -= 1
+            }
+
             when (item.itemId) {
                 R.id.article_list_tab -> {
                     transitionTo(ArticleListFragment())
