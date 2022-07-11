@@ -1,19 +1,19 @@
 package com.example.qiita_clone_android.ui
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.articleFavoriteList.ArticleFavoriteListFragment
 import com.example.qiita_clone_android.ui.articleList.ArticleListFragment
+import com.example.qiita_clone_android.ui.articleList.MainViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity(),
     ArticleListFragment.ArticlesActions {
 
-    private var currentFragment: BaseFragment = ArticleListFragment()
-    var selectedArticle: Article? = null
-        private set
+    val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,13 +22,13 @@ class MainActivity : AppCompatActivity(),
         setToolBar()
         setBottomNavView()
 
-        transitionTo(currentFragment)
+        transitionTo(viewModel.currentFragment)
     }
 
     private fun transitionTo(to: BaseFragment) {
-        currentFragment = to
+        viewModel.setCurrentFragment(to)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.main_activity_content, currentFragment)
+            .replace(R.id.main_activity_content, viewModel.currentFragment)
             .commit()
     }
 
@@ -37,8 +37,8 @@ class MainActivity : AppCompatActivity(),
         supportActionBar?.title = ""
 
         supportFragmentManager.addOnBackStackChangedListener {
-            currentFragment =
-                supportFragmentManager.findFragmentById(R.id.main_activity_content) as BaseFragment
+            viewModel.setCurrentFragment(
+                supportFragmentManager.findFragmentById(R.id.main_activity_content) as BaseFragment)
         }
     }
 
@@ -60,7 +60,11 @@ class MainActivity : AppCompatActivity(),
     // ArticleListFragment.ArticlesActions
 
     override fun onTapArticle(article: Article) {
-        selectedArticle = article
+        viewModel.setSelectedArticle(article)
         transitionTo(WebViewFragment.newInstance(article.url))
+    }
+
+    override fun saveArticles(articles: List<Article>) {
+        viewModel.setArticles(articles)
     }
 }

@@ -19,12 +19,14 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
 
     interface ArticlesActions {
         fun onTapArticle(article: Article)
+        fun saveArticles(articles: List<Article>)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setMenuVisibility(true)
-        viewModel.fetchArticles()
+        val articles = (activity as? MainActivity)?.viewModel?.articles
+        viewModel.setArticles(articles)
     }
 
     override fun onCreateView(
@@ -38,6 +40,11 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         setObservers()
 
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        (activity as? MainActivity)?.saveArticles(viewModel.articles.value ?: listOf())
     }
 
     private fun initViews() {
@@ -62,7 +69,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
                         return false
                     }
                     override fun onQueryTextSubmit(query: String): Boolean {
-                        viewModel.fetchArticles()
+                        viewModel.setArticles(null)
                         return false
                     }
                 })
@@ -94,7 +101,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     private fun setPullToRefresh() {
         val refresh = binding.refreshContainer
         refresh.setOnRefreshListener {
-            viewModel.fetchArticles()
+            viewModel.setArticles(null)
             refresh.isRefreshing = false
         }
     }

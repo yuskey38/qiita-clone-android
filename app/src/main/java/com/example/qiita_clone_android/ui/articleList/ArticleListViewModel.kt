@@ -18,9 +18,13 @@ class ArticleListViewModel : ViewModel() {
 
     private var query: String? = null
 
-    fun fetchArticles() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _articles.postValue(repository.fetchArticles(query))
+    fun setArticles(articles: List<Article>?) {
+        if (articles.isNullOrEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                _articles.postValue(repository.fetchArticles(query))
+            }
+        } else {
+            _articles.postValue(articles)
         }
     }
 

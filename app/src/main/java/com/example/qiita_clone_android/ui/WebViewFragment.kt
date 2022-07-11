@@ -2,7 +2,6 @@ package com.example.qiita_clone_android.ui
 
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.widget.SearchView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
@@ -10,7 +9,6 @@ import androidx.lifecycle.Lifecycle
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
 import com.example.qiita_clone_android.databinding.FragmentWebViewBinding
-import com.example.qiita_clone_android.models.Article
 
 class WebViewFragment : BaseFragment() {
 
@@ -59,7 +57,7 @@ class WebViewFragment : BaseFragment() {
 
     private fun onTapFavorite(item: MenuItem) {
         val activity = activity as? MainActivity ?: return
-        activity.selectedArticle?.let { article ->
+        activity.viewModel.selectedArticle?.let { article ->
             val dao = ArticleFavoriteDao()
             val favorite = dao.findBy(article.id)
 
@@ -76,7 +74,7 @@ class WebViewFragment : BaseFragment() {
 
     private fun setFavoriteIcon(item: MenuItem) {
         val activity = activity as? MainActivity ?: return
-        activity.selectedArticle?.let { article ->
+        activity.viewModel.selectedArticle?.let { article ->
             val dao = ArticleFavoriteDao()
             val favorite = dao.findBy(article.id)
             val fabIcon = if (favorite == null) android.R.drawable.star_off else android.R.drawable.star_on
