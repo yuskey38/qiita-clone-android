@@ -7,13 +7,12 @@ import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.articleList.ArticleListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-
 class MainActivity : AppCompatActivity(),
-    ArticleListFragment.ArticlesActions,
-    WebViewFragment.WebViewActions {
+    ArticleListFragment.ArticlesActions {
 
     private var currentFragment: BaseFragment = ArticleListFragment()
-    private var selectedArticle: Article? = null
+    var selectedArticle: Article? = null
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,11 +62,5 @@ class MainActivity : AppCompatActivity(),
     override fun onTapArticle(article: Article) {
         selectedArticle = article
         transitionTo(WebViewFragment.newInstance(article.url))
-    }
-
-    // WebViewFragment.WebViewActions
-
-    override fun onTapFavorite() {
-
     }
 }
