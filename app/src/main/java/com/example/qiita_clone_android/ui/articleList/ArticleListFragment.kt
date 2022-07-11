@@ -18,7 +18,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     private val viewModel: ArticleListViewModel by viewModels()
 
     interface ArticlesActions {
-        fun onTapArticle(url: String)
+        fun onTapArticle(article: Article)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +54,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     private fun setOptionsMenu() {
         activity?.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.custom_menu, menu)
+                menuInflater.inflate(R.menu.article_list_menu, menu)
                 val searchView: SearchView = menu.findItem(R.id.action_search).actionView as SearchView
                 searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextChange(newText: String): Boolean {
@@ -106,6 +106,6 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     }
 
     override fun onItemClick(view: View, article: Article) {
-        (activity as? MainActivity)?.onTapArticle(article.url)
+        (activity as? MainActivity)?.onTapArticle(article)
     }
 }
