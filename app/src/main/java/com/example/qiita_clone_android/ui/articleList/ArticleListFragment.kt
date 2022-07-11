@@ -18,13 +18,15 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     private val viewModel: ArticleListViewModel by viewModels()
 
     interface ArticlesActions {
-        fun onTapArticle(url: String)
+        fun onTapArticle(article: Article)
+        fun saveArticles(articles: List<Article>)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setMenuVisibility(true)
-        viewModel.fetchArticles()
+        val articles = (activity as? MainActivity)?.viewModel?.articles
+        viewModel.setArticles(articles)
     }
 
     override fun onCreateView(
@@ -40,6 +42,11 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         return binding.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        (activity as? MainActivity)?.saveArticles(viewModel.articles.value ?: listOf())
+    }
+
     private fun initViews() {
         setOptionsMenu()
         setRecyclerView()
@@ -52,9 +59,12 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     }
 
     private fun setOptionsMenu() {
-        activity?.addMenuProvider(object : MenuProvider {
+        val activity = activity as? MainActivity ?: return
+        activity.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
+        activity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.custom_menu, menu)
+                menuInflater.inflate(R.menu.article_list_menu, menu)
                 val searchView: SearchView = menu.findItem(R.id.action_search).actionView as SearchView
                 searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextChange(newText: String): Boolean {
@@ -62,7 +72,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
                         return false
                     }
                     override fun onQueryTextSubmit(query: String): Boolean {
-                        viewModel.fetchArticles()
+                        viewModel.setArticles(null)
                         return false
                     }
                 })
@@ -94,7 +104,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     private fun setPullToRefresh() {
         val refresh = binding.refreshContainer
         refresh.setOnRefreshListener {
-            viewModel.fetchArticles()
+            viewModel.setArticles(null)
             refresh.isRefreshing = false
         }
     }
@@ -106,6 +116,6 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     }
 
     override fun onItemClick(view: View, article: Article) {
-        (activity as? MainActivity)?.onTapArticle(article.url)
+        (activity as? MainActivity)?.onTapArticle(article)
     }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/article_list_tab"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        app:showAsAction="ifRoom"
+        android:title="@string/article_list_tab_title"/>
+    <item
+        android:id="@+id/article_favorite_tab"
+        android:enabled="true"
+        android:icon="@android:drawable/star_off"
+        app:showAsAction="ifRoom"
+        android:title="@string/article_favorite_tab_title"/>
+</menu>
