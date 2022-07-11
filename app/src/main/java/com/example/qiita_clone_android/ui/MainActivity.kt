@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.models.Article
+import com.example.qiita_clone_android.ui.articleFavoriteList.ArticleFavoriteListFragment
 import com.example.qiita_clone_android.ui.articleList.ArticleListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -28,7 +29,6 @@ class MainActivity : AppCompatActivity(),
         currentFragment = to
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_activity_content, currentFragment)
-            .addToBackStack(null)
             .commit()
     }
 
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(),
                     transitionTo(ArticleListFragment())
                 }
                 R.id.article_favorite_tab -> {
-                    transitionTo(WebViewFragment())
+                    transitionTo(ArticleFavoriteListFragment())
                 }
             }
             return@setOnItemSelectedListener true

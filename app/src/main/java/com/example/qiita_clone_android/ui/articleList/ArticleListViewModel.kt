@@ -12,11 +12,7 @@ import kotlinx.coroutines.launch
 class ArticleListViewModel : ViewModel() {
     private val repository = ArticleListRepository()
 
-    init {
-        fetchArticles()
-    }
-
-    private var _articles = MutableLiveData<List<Article>>()
+    private var _articles = MutableLiveData<List<Article>>(listOf())
     val articles: LiveData<List<Article>>
         get() = _articles
 

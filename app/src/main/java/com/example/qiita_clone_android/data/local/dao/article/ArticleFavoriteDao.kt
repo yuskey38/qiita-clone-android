@@ -2,9 +2,11 @@ package com.example.qiita_clone_android.data.local.dao.article
 
 import com.example.qiita_clone_android.data.local.entity.ArticleFavoriteEntity
 import com.example.qiita_clone_android.models.Article
+import com.example.qiita_clone_android.models.QiitaUser
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.query.RealmResults
 
 class ArticleFavoriteDao {
     private val config = RealmConfiguration.Builder(schema = setOf(ArticleFavoriteEntity::class))
@@ -14,6 +16,22 @@ class ArticleFavoriteDao {
     fun findBy(id: String): ArticleFavoriteEntity? {
         val realm: Realm = Realm.open(config)
         return realm.query<ArticleFavoriteEntity>("_id == $0", id).find().firstOrNull()
+    }
+
+    fun findAll():
+            List<Article> {
+        val realm: Realm = Realm.open(config)
+        return realm.query<ArticleFavoriteEntity>().find().map {
+            Article(
+                it._id,
+                it.title,
+                it.url,
+                QiitaUser(
+                    it.userId,
+                    it.profileImage
+                )
+            )
+        }
     }
 
     fun insert(article: Article) {
