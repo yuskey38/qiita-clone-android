@@ -13,25 +13,14 @@ class ArticleFavoriteDao {
         .deleteRealmIfMigrationNeeded()
         .build()
 
-    fun findBy(id: String): ArticleFavoriteEntity? {
+    fun findBy(id: String): Article? {
         val realm: Realm = Realm.open(config)
-        return realm.query<ArticleFavoriteEntity>("_id == $0", id).find().firstOrNull()
+        return realm.query<ArticleFavoriteEntity>("_id == $0", id).find().firstOrNull()?.toArticle()
     }
 
-    fun findAll():
-            List<Article> {
+    fun findAll(): List<Article> {
         val realm: Realm = Realm.open(config)
-        return realm.query<ArticleFavoriteEntity>().find().map {
-            Article(
-                it._id,
-                it.title,
-                it.url,
-                QiitaUser(
-                    it.userId,
-                    it.profileImage
-                )
-            )
-        }
+        return realm.query<ArticleFavoriteEntity>().find().map { it.toArticle() }
     }
 
     fun insert(article: Article) {
