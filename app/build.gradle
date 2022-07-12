@@ -66,6 +66,7 @@ dependencies {
     implementation 'io.realm.kotlin:library-base:1.0.0'
     // Picasso
     implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'jp.wasabeef:picasso-transformations:2.4.0'
     // SwipeRefreshLayout
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 }

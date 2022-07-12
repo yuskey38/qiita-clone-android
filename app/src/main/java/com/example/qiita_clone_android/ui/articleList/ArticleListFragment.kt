@@ -2,16 +2,20 @@ package com.example.qiita_clone_android.ui.articleList
 
 import android.os.Bundle
 import android.view.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.Visibility
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.MainActivity
+import com.example.qiita_clone_android.ui.adapters.ArticleAdapter
 
 class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.ItemClickListener {
     private lateinit var binding: FragmentArticleListBinding
@@ -24,7 +28,6 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setMenuVisibility(true)
         val articles = (activity as? MainActivity)?.viewModel?.articles
         viewModel.setArticles(articles)
     }
@@ -42,12 +45,13 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         return binding.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         (activity as? MainActivity)?.saveArticles(viewModel.articles.value ?: listOf())
     }
 
     private fun initViews() {
+        binding.loading.visibility = VISIBLE
         setOptionsMenu()
         setRecyclerView()
     }
@@ -65,13 +69,16 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         activity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.article_list_menu, menu)
-                val searchView: SearchView = menu.findItem(R.id.action_search).actionView as SearchView
+                val searchView: SearchView =
+                    menu.findItem(R.id.action_search).actionView as SearchView
                 searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextChange(newText: String): Boolean {
                         viewModel.updateQuery(newText)
                         return false
                     }
+
                     override fun onQueryTextSubmit(query: String): Boolean {
+                        binding.loading.visibility = VISIBLE
                         viewModel.setArticles(null)
                         return false
                     }
@@ -91,25 +98,26 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         val adapter = ArticleAdapter(
             binding.root.context,
             this,
-            listOf()
         )
         val layoutManager =
             LinearLayoutManager(
-                binding.root.context, LinearLayoutManager.VERTICAL, false)
+                binding.root.context, LinearLayoutManager.VERTICAL, false
+            )
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = layoutManager
     }
 
     private fun setPullToRefresh() {
-        val refresh = binding.refreshContainer
-        refresh.setOnRefreshListener {
+        binding.refreshContainer.setOnRefreshListener {
             viewModel.setArticles(null)
-            refresh.isRefreshing = false
         }
     }
 
     private fun updateArticles(articles: List<Article>) {
+        binding.refreshContainer.isRefreshing = false
+        binding.loading.visibility = GONE
+
         val recyclerView = binding.articleList
         val adapter = recyclerView.adapter as ArticleAdapter
         adapter.updateArticles(articles)

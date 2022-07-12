@@ -3,6 +3,9 @@ package com.example.qiita_clone_android.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
@@ -10,11 +13,12 @@ import androidx.lifecycle.Lifecycle
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
 import com.example.qiita_clone_android.databinding.FragmentWebViewBinding
-import com.example.qiita_clone_android.ui.articleList.ArticleListFragment
+
 
 class WebViewFragment : BaseFragment() {
 
     private lateinit var binding: FragmentWebViewBinding
+    private var showFabIcon: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,6 +39,17 @@ class WebViewFragment : BaseFragment() {
 
     private fun setWebView() {
         val webView = binding.webView
+        webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
+                showFabIcon = view?.originalUrl == request?.url.toString()
+                activity?.invalidateOptionsMenu()
+                return super.shouldOverrideUrlLoading(view, request)
+            }
+        }
+
         val url = arguments?.getString(OPEN_URL) ?: ""
         webView.loadUrl(url)
     }
@@ -58,6 +73,12 @@ class WebViewFragment : BaseFragment() {
                 }
                 return false
             }
+
+            override fun onPrepareMenu(menu: Menu) {
+                super.onPrepareMenu(menu)
+                val favorite = menu.findItem(R.id.action_favorite)
+                setFavoriteIcon(favorite)
+            }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
@@ -80,17 +101,14 @@ class WebViewFragment : BaseFragment() {
     }
 
     private fun onTapShare() {
-        val activity = activity as? MainActivity ?: return
-        val url = arguments?.getString(OPEN_URL) ?: ""
-        val article = activity.viewModel.selectedArticle
+        val webView = binding.webView
+
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             type = "text/plain"
 
-            putExtra(Intent.EXTRA_TEXT, url)
-            if (!article?.title.isNullOrEmpty()) {
-                putExtra(Intent.EXTRA_TITLE, article!!.title)
-            }
+            putExtra(Intent.EXTRA_TEXT, webView.url)
+            putExtra(Intent.EXTRA_TITLE, webView.title)
         }
 
         val shareIntent = Intent.createChooser(sendIntent, null)
@@ -100,6 +118,7 @@ class WebViewFragment : BaseFragment() {
 
     private fun setFavoriteIcon(item: MenuItem) {
         val activity = activity as? MainActivity ?: return
+        item.isVisible = showFabIcon
         activity.viewModel.selectedArticle?.let { article ->
             val dao = ArticleFavoriteDao()
             val favorite = dao.findBy(article.id)
