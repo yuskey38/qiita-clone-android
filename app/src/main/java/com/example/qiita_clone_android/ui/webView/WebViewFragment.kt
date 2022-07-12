@@ -1,4 +1,4 @@
-package com.example.qiita_clone_android.ui
+package com.example.qiita_clone_android.ui.webView
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,16 +9,20 @@ import android.webkit.WebViewClient
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
 import com.example.qiita_clone_android.databinding.FragmentWebViewBinding
+import com.example.qiita_clone_android.models.Article
+import com.example.qiita_clone_android.ui.BaseFragment
+import com.example.qiita_clone_android.ui.MainActivity
 
 
 class WebViewFragment : BaseFragment() {
 
     private lateinit var binding: FragmentWebViewBinding
-    private var showFabIcon: Boolean = true
+    private val viewModel: WebViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,6 +32,7 @@ class WebViewFragment : BaseFragment() {
         binding = FragmentWebViewBinding.inflate(inflater)
 
         initViews()
+        initViewModel()
 
         return binding.root
     }
@@ -37,6 +42,11 @@ class WebViewFragment : BaseFragment() {
         setOptionsMenu()
     }
 
+    private fun initViewModel() {
+        val article = arguments?.getSerializable(SELECTED_ARTICLE) as? Article?
+        viewModel.setSelectedArticle(article)
+    }
+
     private fun setWebView() {
         val webView = binding.webView
         webView.webViewClient = object : WebViewClient() {
@@ -44,7 +54,7 @@ class WebViewFragment : BaseFragment() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
-                showFabIcon = view?.originalUrl == request?.url.toString()
+                viewModel.setShowFavoriteIcon(view?.originalUrl == request?.url.toString())
                 activity?.invalidateOptionsMenu()
                 return super.shouldOverrideUrlLoading(view, request)
             }
@@ -83,21 +93,9 @@ class WebViewFragment : BaseFragment() {
     }
 
     private fun onTapFavorite(item: MenuItem) {
-        val activity = activity as? MainActivity ?: return
-        activity.viewModel.selectedArticle?.let { article ->
-            val dao = ArticleFavoriteDao()
-            val favorite = dao.findBy(article.id)
-
-            if (favorite == null) {
-                dao.insert(article)
-            } else {
-                dao.delete(article)
-            }
-
-            val fabIcon =
-                if (favorite == null) android.R.drawable.star_on else android.R.drawable.star_off
-            item.icon = ResourcesCompat.getDrawable(resources, fabIcon, null)
-        }
+        viewModel.switchFavorite()
+        val icon = viewModel.getFavoriteIcon()
+        item.icon = ResourcesCompat.getDrawable(resources, icon, null)
     }
 
     private fun onTapShare() {
@@ -113,26 +111,25 @@ class WebViewFragment : BaseFragment() {
 
         val shareIntent = Intent.createChooser(sendIntent, null)
         startActivity(shareIntent)
-
     }
 
     private fun setFavoriteIcon(item: MenuItem) {
-        val activity = activity as? MainActivity ?: return
-        item.isVisible = showFabIcon
-        activity.viewModel.selectedArticle?.let { article ->
-            val dao = ArticleFavoriteDao()
-            val favorite = dao.findBy(article.id)
-            val fabIcon =
-                if (favorite == null) android.R.drawable.star_off else android.R.drawable.star_on
-            item.icon = ResourcesCompat.getDrawable(resources, fabIcon, null)
-        }
+        val icon = viewModel.getFavoriteIcon()
+        item.icon = ResourcesCompat.getDrawable(resources, icon, null)
+        item.isVisible = viewModel.showFavoriteIcon
     }
 
     companion object {
-        const val OPEN_URL = "com.example.qiita_clone_android.ui.WebViewFragment.URL"
-        fun newInstance(url: String): WebViewFragment {
+        const val OPEN_URL = "com.example.qiita_clone_android.ui.webView.WebViewFragment.OPEN_URL"
+        const val SELECTED_ARTICLE =
+            "com.example.qiita_clone_android.ui.webView.WebViewFragment.SELECTED_ARTICLE"
+
+        fun newInstance(url: String, article: Article? = null): WebViewFragment {
             return WebViewFragment().apply {
-                arguments = bundleOf(OPEN_URL to url)
+                arguments = bundleOf(
+                    OPEN_URL to url,
+                    SELECTED_ARTICLE to article
+                )
             }
         }
     }
