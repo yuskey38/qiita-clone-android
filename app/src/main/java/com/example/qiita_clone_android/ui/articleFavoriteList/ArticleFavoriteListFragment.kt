@@ -2,6 +2,7 @@ package com.example.qiita_clone_android.ui.articleFavoriteList
 
 import android.os.Bundle
 import android.view.*
+import android.view.View.GONE
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
@@ -32,9 +33,10 @@ class ArticleFavoriteListFragment : BaseFragment(),
 
     private fun initViews() {
         setRecyclerView()
+        binding.loading.visibility = GONE
+        binding.refreshContainer.isEnabled = false
 
-        val activity = activity as? MainActivity ?: return
-        activity.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     private fun setObservers() {

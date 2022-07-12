@@ -2,11 +2,14 @@ package com.example.qiita_clone_android.ui.articleList
 
 import android.os.Bundle
 import android.view.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.Visibility
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.models.Article
@@ -25,7 +28,6 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setMenuVisibility(true)
         val articles = (activity as? MainActivity)?.viewModel?.articles
         viewModel.setArticles(articles)
     }
@@ -49,6 +51,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     }
 
     private fun initViews() {
+        binding.loading.visibility = VISIBLE
         setOptionsMenu()
         setRecyclerView()
     }
@@ -75,6 +78,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
                     }
 
                     override fun onQueryTextSubmit(query: String): Boolean {
+                        binding.loading.visibility = VISIBLE
                         viewModel.setArticles(null)
                         return false
                     }
@@ -105,14 +109,15 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     }
 
     private fun setPullToRefresh() {
-        val refresh = binding.refreshContainer
-        refresh.setOnRefreshListener {
+        binding.refreshContainer.setOnRefreshListener {
             viewModel.setArticles(null)
-            refresh.isRefreshing = false
         }
     }
 
     private fun updateArticles(articles: List<Article>) {
+        binding.refreshContainer.isRefreshing = false
+        binding.loading.visibility = GONE
+
         val recyclerView = binding.articleList
         val adapter = recyclerView.adapter as ArticleAdapter
         adapter.updateArticles(articles)
