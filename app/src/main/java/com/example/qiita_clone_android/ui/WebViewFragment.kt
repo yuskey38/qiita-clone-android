@@ -3,6 +3,8 @@ package com.example.qiita_clone_android.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
@@ -10,7 +12,7 @@ import androidx.lifecycle.Lifecycle
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
 import com.example.qiita_clone_android.databinding.FragmentWebViewBinding
-import com.example.qiita_clone_android.ui.articleList.ArticleListFragment
+
 
 class WebViewFragment : BaseFragment() {
 
@@ -35,6 +37,8 @@ class WebViewFragment : BaseFragment() {
 
     private fun setWebView() {
         val webView = binding.webView
+        webView.webViewClient = WebViewClient()
+
         val url = arguments?.getString(OPEN_URL) ?: ""
         webView.loadUrl(url)
     }
