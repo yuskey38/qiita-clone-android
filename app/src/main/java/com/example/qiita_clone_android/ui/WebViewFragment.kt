@@ -1,5 +1,6 @@
 package com.example.qiita_clone_android.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.core.content.res.ResourcesCompat
@@ -50,9 +51,10 @@ class WebViewFragment : BaseFragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                when(menuItem.itemId) {
+                when (menuItem.itemId) {
                     android.R.id.home -> parentFragmentManager.popBackStack()
                     R.id.action_favorite -> onTapFavorite(menuItem)
+                    R.id.action_share -> onTapShare()
                 }
                 return false
             }
@@ -71,9 +73,29 @@ class WebViewFragment : BaseFragment() {
                 dao.delete(article)
             }
 
-            val fabIcon = if (favorite == null) android.R.drawable.star_on else android.R.drawable.star_off
+            val fabIcon =
+                if (favorite == null) android.R.drawable.star_on else android.R.drawable.star_off
             item.icon = ResourcesCompat.getDrawable(resources, fabIcon, null)
         }
+    }
+
+    private fun onTapShare() {
+        val activity = activity as? MainActivity ?: return
+        val url = arguments?.getString(OPEN_URL) ?: ""
+        val article = activity.viewModel.selectedArticle
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+
+            putExtra(Intent.EXTRA_TEXT, url)
+            if (!article?.title.isNullOrEmpty()) {
+                putExtra(Intent.EXTRA_TITLE, article!!.title)
+            }
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
+
     }
 
     private fun setFavoriteIcon(item: MenuItem) {
@@ -81,7 +103,8 @@ class WebViewFragment : BaseFragment() {
         activity.viewModel.selectedArticle?.let { article ->
             val dao = ArticleFavoriteDao()
             val favorite = dao.findBy(article.id)
-            val fabIcon = if (favorite == null) android.R.drawable.star_off else android.R.drawable.star_on
+            val fabIcon =
+                if (favorite == null) android.R.drawable.star_off else android.R.drawable.star_on
             item.icon = ResourcesCompat.getDrawable(resources, fabIcon, null)
         }
     }
