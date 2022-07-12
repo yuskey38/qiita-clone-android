@@ -1,8 +1,8 @@
-package com.example.qiita_clone_android.ui.articleList
+package com.example.qiita_clone_android.ui
 
 import androidx.lifecycle.ViewModel
 import com.example.qiita_clone_android.models.Article
-import com.example.qiita_clone_android.ui.BaseFragment
+import com.example.qiita_clone_android.ui.articleList.ArticleListFragment
 
 class MainViewModel: ViewModel() {
     var currentFragment: BaseFragment = ArticleListFragment()

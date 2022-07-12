@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.MainActivity
+import com.example.qiita_clone_android.ui.adapters.ArticleAdapter
 
-class ArticleFavoriteListFragment : BaseFragment(), ArticleFavoriteAdapter.RecyclerViewHolder.ItemClickListener {
+class ArticleFavoriteListFragment : BaseFragment(),
+    ArticleAdapter.RecyclerViewHolder.ItemClickListener {
     private lateinit var binding: FragmentArticleListBinding
     private val viewModel: ArticleFavoriteListViewModel by viewModels()
 
@@ -44,21 +45,22 @@ class ArticleFavoriteListFragment : BaseFragment(), ArticleFavoriteAdapter.Recyc
 
     private fun setRecyclerView() {
         val recyclerView = binding.articleList
-        val adapter = ArticleFavoriteAdapter(
+        val adapter = ArticleAdapter(
             binding.root.context,
             this,
-            listOf()
         )
         val layoutManager =
             LinearLayoutManager(
-                binding.root.context, LinearLayoutManager.VERTICAL, false)
+                binding.root.context, LinearLayoutManager.VERTICAL, false
+            )
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = layoutManager
     }
+
     private fun updateArticles(articles: List<Article>) {
         val recyclerView = binding.articleList
-        val adapter = recyclerView.adapter as ArticleFavoriteAdapter
+        val adapter = recyclerView.adapter as ArticleAdapter
         adapter.updateArticles(articles)
     }
 

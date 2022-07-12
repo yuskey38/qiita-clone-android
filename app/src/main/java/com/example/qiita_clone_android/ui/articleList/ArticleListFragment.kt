@@ -12,6 +12,7 @@ import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.MainActivity
+import com.example.qiita_clone_android.ui.adapters.ArticleAdapter
 
 class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.ItemClickListener {
     private lateinit var binding: FragmentArticleListBinding
@@ -42,8 +43,8 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         return binding.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         (activity as? MainActivity)?.saveArticles(viewModel.articles.value ?: listOf())
     }
 
@@ -65,12 +66,14 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         activity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.article_list_menu, menu)
-                val searchView: SearchView = menu.findItem(R.id.action_search).actionView as SearchView
+                val searchView: SearchView =
+                    menu.findItem(R.id.action_search).actionView as SearchView
                 searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextChange(newText: String): Boolean {
                         viewModel.updateQuery(newText)
                         return false
                     }
+
                     override fun onQueryTextSubmit(query: String): Boolean {
                         viewModel.setArticles(null)
                         return false
@@ -91,11 +94,11 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         val adapter = ArticleAdapter(
             binding.root.context,
             this,
-            listOf()
         )
         val layoutManager =
             LinearLayoutManager(
-                binding.root.context, LinearLayoutManager.VERTICAL, false)
+                binding.root.context, LinearLayoutManager.VERTICAL, false
+            )
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = layoutManager

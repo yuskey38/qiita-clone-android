@@ -1,4 +1,4 @@
-package com.example.qiita_clone_android.ui.articleFavoriteList
+package com.example.qiita_clone_android.ui.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,15 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.models.Article
 import com.squareup.picasso.Picasso
+import jp.wasabeef.picasso.transformations.CropCircleTransformation
 
-class ArticleFavoriteAdapter(
+class ArticleAdapter(
     private val context: Context,
     private val itemClickListener: RecyclerViewHolder.ItemClickListener,
-    private val articles: List<Article>
-) : RecyclerView.Adapter<ArticleFavoriteAdapter.RecyclerViewHolder>() {
+) : RecyclerView.Adapter<ArticleAdapter.RecyclerViewHolder>() {
 
     private var mRecyclerView: RecyclerView? = null
-    private var _articles: List<Article> = articles
+    private var _articles: List<Article> = listOf()
 
     fun updateArticles(newArticles: List<Article>) {
         _articles = newArticles
@@ -41,9 +41,13 @@ class ArticleFavoriteAdapter(
 
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         holder.let {
-            it.titleText.text = _articles[position].title
-            it.userIdText.text = _articles[position].user.id
-            Picasso.get().load(_articles[position].user.profileImageUrl).fit().centerCrop().into(it.imageView)
+            val article = _articles[position]
+            it.titleText.text = article.title
+            it.userIdText.text = if (article.user.id.isEmpty()) "" else "@${article.user.id}"
+            Picasso.get().load(article.user.profileImageUrl)
+                .transform(CropCircleTransformation())
+                .fit()
+                .into(it.imageView)
         }
     }
 
@@ -68,10 +72,6 @@ class ArticleFavoriteAdapter(
         val imageView: ImageView = view.findViewById(R.id.article_user_image)
         val titleText: TextView = view.findViewById(R.id.article_title)
         val userIdText: TextView = view.findViewById(R.id.article_user_id)
-
-        init {
-            // layoutの初期設定するときはココ
-        }
     }
 
 }
