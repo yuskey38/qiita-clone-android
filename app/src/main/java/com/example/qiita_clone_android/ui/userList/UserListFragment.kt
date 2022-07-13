@@ -10,7 +10,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.map
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.databinding.FragmentUserListBinding
@@ -21,11 +23,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class UserListFragment : BaseFragment() {
-
-    companion object {
-        fun newInstance() = UserListFragment()
-    }
-
     private lateinit var binding: FragmentUserListBinding
     private val viewModel: UserListViewModel by viewModels()
 
@@ -47,9 +44,10 @@ class UserListFragment : BaseFragment() {
     private fun setRecyclerView() {
         val usersAdapter = UserPagingAdapter()
         binding.userList.apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = GridLayoutManager(
+                context, 2, RecyclerView.VERTICAL, false
+            )
             adapter = usersAdapter
-            setHasFixedSize(true)
         }
 
         lifecycleScope.launch {

@@ -15,7 +15,7 @@ class UserListViewModel : ViewModel() {
     private val repository = UserRepository()
 
     val users =
-        Pager(config = PagingConfig(pageSize = 10), pagingSourceFactory = {
+        Pager(config = PagingConfig(initialLoadSize = 20, pageSize = 20), pagingSourceFactory = {
             UserPagingDataSource(repository)
         }).flow.cachedIn(viewModelScope)
 }

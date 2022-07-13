@@ -1,12 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:orientation="horizontal">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:contentDescription="@string/ProfileImage" />
 
     <TextView
         android:id="@+id/user_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="4dp"
+        android:textIsSelectable="true"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/github_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="2dp"
+        android:textIsSelectable="true"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/twitter_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="2dp"
+        android:textIsSelectable="true"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/facebook_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="2dp"
+        android:textIsSelectable="true"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/linked_in_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="2dp"
+        android:textIsSelectable="true"
+        android:textSize="12sp" />
 
 </LinearLayout>
