@@ -13,6 +13,5 @@
         android:icon="@drawable/ic_star"
         android:orderInCategory="100"
         android:title=""
-        app:iconTint="@color/white"
         app:showAsAction="always" />
 </menu>
