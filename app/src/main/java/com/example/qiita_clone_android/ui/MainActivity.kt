@@ -7,6 +7,7 @@ import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.articleFavoriteList.ArticleFavoriteListFragment
 import com.example.qiita_clone_android.ui.articleList.ArticleListFragment
+import com.example.qiita_clone_android.ui.userList.UserListFragment
 import com.example.qiita_clone_android.ui.webView.WebViewFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -56,6 +57,9 @@ class MainActivity : AppCompatActivity(),
             when (item.itemId) {
                 R.id.article_list_tab -> {
                     transitionTo(ArticleListFragment())
+                }
+                R.id.user_list_tab -> {
+                    transitionTo(UserListFragment())
                 }
                 R.id.article_favorite_tab -> {
                     transitionTo(ArticleFavoriteListFragment())

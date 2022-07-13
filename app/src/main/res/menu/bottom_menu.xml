@@ -8,6 +8,12 @@
         app:showAsAction="ifRoom"
         android:title="@string/article_list_tab_title"/>
     <item
+        android:id="@+id/user_list_tab"
+        android:enabled="true"
+        android:icon="@drawable/ic_account_circle"
+        app:showAsAction="ifRoom"
+        android:title="@string/user_list_tab_title"/>
+    <item
         android:id="@+id/article_favorite_tab"
         android:enabled="true"
         android:icon="@android:drawable/star_off"
