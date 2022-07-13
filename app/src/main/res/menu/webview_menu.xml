@@ -3,14 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_share"
-        android:icon="@android:drawable/ic_menu_share"
+        android:icon="@drawable/ic_share"
         android:orderInCategory="100"
-        app:showAsAction="always"
-        android:title="@string/action_share"/>
+        android:title="@string/action_share"
+        app:iconTint="@color/white"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_favorite"
-        android:icon="@android:drawable/star_off"
+        android:icon="@drawable/ic_star"
         android:orderInCategory="100"
-        app:showAsAction="always"
-        android:title=""/>
+        android:title=""
+        app:iconTint="@color/white"
+        app:showAsAction="always" />
 </menu>

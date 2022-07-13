@@ -20,11 +20,11 @@ class ArticleListViewModel : ViewModel() {
 
     fun setArticles(articles: List<Article>?) {
         if (articles.isNullOrEmpty()) {
-            viewModelScope.launch(Dispatchers.IO) {
-                _articles.postValue(repository.fetchArticles(query))
+            viewModelScope.launch {
+                _articles.value = repository.fetchArticles(query)
             }
         } else {
-            _articles.postValue(articles)
+            _articles.value = articles
         }
     }
 

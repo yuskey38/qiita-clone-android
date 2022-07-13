@@ -7,4 +7,6 @@
     <string name="article_favorite_tab_title">お気に入り</string>
     <string name="action_favorite">Fav</string>
     <string name="action_share">Share</string>
+    <string name="user_list_tab_title">ユーザー</string>
+    <string name="ProfileImage">profileImage</string>
 </resources>
