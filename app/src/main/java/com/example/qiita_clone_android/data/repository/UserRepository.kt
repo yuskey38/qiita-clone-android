@@ -5,10 +5,9 @@ import com.example.qiita_clone_android.data.remote.ApiRequest
 import com.example.qiita_clone_android.models.User
 
 class UserRepository {
-    fun fetchUsers(): List<User> {
+
+    suspend fun fetchUsers(page: Int, perPage: Int): List<User> {
         return ApiClient.retrofit.create(ApiRequest::class.java)
-            .fetchUsers(1, 20)
-            .execute()
-            .body() ?: listOf()
+            .fetchUsers(page, perPage)
     }
 }

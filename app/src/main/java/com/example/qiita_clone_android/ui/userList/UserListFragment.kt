@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
@@ -15,6 +17,8 @@ import com.example.qiita_clone_android.databinding.FragmentUserListBinding
 import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.adapters.ArticleAdapter
 import com.example.qiita_clone_android.ui.articleList.ArticleListViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class UserListFragment : BaseFragment() {
 
@@ -25,11 +29,6 @@ class UserListFragment : BaseFragment() {
     private lateinit var binding: FragmentUserListBinding
     private val viewModel: UserListViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.setUsers(null)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,7 +36,6 @@ class UserListFragment : BaseFragment() {
         binding = FragmentUserListBinding.inflate(inflater)
 
         initViews()
-        setObservers()
 
         return binding.root
     }
@@ -46,26 +44,18 @@ class UserListFragment : BaseFragment() {
         setRecyclerView()
     }
 
-    private fun setObservers() {
-        viewModel.users.observe(viewLifecycleOwner) { users ->
-            users.forEach {
-                Log.v("USERS", it.id)
+    private fun setRecyclerView() {
+        val usersAdapter = UserPagingAdapter()
+        binding.userList.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = usersAdapter
+            setHasFixedSize(true)
+        }
+
+        lifecycleScope.launch {
+            viewModel.users.collectLatest { data ->
+                usersAdapter.submitData(data)
             }
         }
-    }
-
-    private fun setRecyclerView() {
-//        val recyclerView = binding.userList
-//        val adapter = ArticleAdapter(
-//            binding.root.context,
-//            this,
-//        )
-//        val layoutManager =
-//            LinearLayoutManager(
-//                binding.root.context, LinearLayoutManager.VERTICAL, false
-//            )
-//
-//        recyclerView.adapter = adapter
-//        recyclerView.layoutManager = layoutManager
     }
 }

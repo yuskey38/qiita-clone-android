@@ -11,11 +11,9 @@ class ArticleRepository {
 
     private val articleFavoriteDao: ArticleFavoriteDao = ArticleFavoriteDao()
 
-    fun fetchArticles(query: String?): List<Article> {
+    suspend fun fetchArticles(query: String?): List<Article> {
         return retrofit.create(ApiRequest::class.java)
             .fetchArticles(1, 20, query)
-            .execute()
-            .body() ?: listOf()
     }
 
     fun getAllFavorites(): List<Article> {

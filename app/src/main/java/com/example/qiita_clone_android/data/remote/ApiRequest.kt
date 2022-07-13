@@ -8,15 +8,15 @@ import retrofit2.http.Query
 
 interface ApiRequest {
     @GET("/api/v2/items")
-    fun fetchArticles(
+    suspend fun fetchArticles(
         @Query("page") page: Int,
         @Query("per_page") perPage: Int,
         @Query("query") query: String?,
-    ): Call<List<Article>>
+    ): List<Article>
 
     @GET("/api/v2/users")
-    fun fetchUsers(
+    suspend fun fetchUsers(
         @Query("page") page: Int,
         @Query("per_page") perPage: Int,
-    ): Call<List<User>>
+    ): List<User>
 }
