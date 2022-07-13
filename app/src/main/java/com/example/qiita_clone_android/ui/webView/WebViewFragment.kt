@@ -7,17 +7,16 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import com.example.qiita_clone_android.R
-import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
 import com.example.qiita_clone_android.databinding.FragmentWebViewBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.MainActivity
-
 
 class WebViewFragment : BaseFragment() {
 
@@ -78,8 +77,8 @@ class WebViewFragment : BaseFragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when (menuItem.itemId) {
                     android.R.id.home -> parentFragmentManager.popBackStack()
-                    R.id.action_favorite -> onTapFavorite(menuItem)
                     R.id.action_share -> onTapShare()
+                    R.id.action_favorite -> onTapFavorite(menuItem)
                 }
                 return false
             }
@@ -90,12 +89,6 @@ class WebViewFragment : BaseFragment() {
                 setFavoriteIcon(favorite)
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
-    private fun onTapFavorite(item: MenuItem) {
-        viewModel.switchFavorite()
-        val icon = viewModel.getFavoriteIcon()
-        item.icon = ResourcesCompat.getDrawable(resources, icon, null)
     }
 
     private fun onTapShare() {
@@ -113,9 +106,16 @@ class WebViewFragment : BaseFragment() {
         startActivity(shareIntent)
     }
 
+    private fun onTapFavorite(item: MenuItem) {
+        viewModel.switchFavorite()
+        setFavoriteIcon(item)
+    }
+
     private fun setFavoriteIcon(item: MenuItem) {
-        val icon = viewModel.getFavoriteIcon()
-        item.icon = ResourcesCompat.getDrawable(resources, icon, null)
+        val iconColor = viewModel.getFavoriteIconColor()
+        val drawableWrap = DrawableCompat.wrap(item.icon).mutate()
+        DrawableCompat.setTint(drawableWrap, ResourcesCompat.getColor(resources, iconColor, null))
+        item.icon = drawableWrap
         item.isVisible = viewModel.showFavoriteIcon
     }
 

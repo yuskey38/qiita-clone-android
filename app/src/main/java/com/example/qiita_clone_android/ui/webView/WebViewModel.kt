@@ -1,6 +1,7 @@
 package com.example.qiita_clone_android.ui.webView
 
 import androidx.lifecycle.ViewModel
+import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.data.repository.ArticleRepository
 import com.example.qiita_clone_android.models.Article
 
@@ -32,9 +33,9 @@ class WebViewModel : ViewModel() {
         }
     }
 
-    fun getFavoriteIcon(): Int {
-        val article = selectedArticle ?: return android.R.drawable.star_off
+    fun getFavoriteIconColor(): Int {
+        val article = selectedArticle ?: return R.color.white
         val favorite = articleRepository.getFavoriteBy(article.id)
-        return if (favorite == null) android.R.drawable.star_off else android.R.drawable.star_on
+        return if (favorite == null) R.color.white else R.color.yellow
     }
 }
