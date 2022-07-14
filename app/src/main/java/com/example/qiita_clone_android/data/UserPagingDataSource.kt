@@ -6,6 +6,11 @@ import com.example.qiita_clone_android.data.repository.UserRepository
 import com.example.qiita_clone_android.models.User
 
 class UserPagingDataSource(repository: UserRepository) : PagingSource<Int, User>() {
+    companion object {
+        const val PER_PAGE = 20
+    }
+
+
     private val repository: UserRepository
 
     init {
