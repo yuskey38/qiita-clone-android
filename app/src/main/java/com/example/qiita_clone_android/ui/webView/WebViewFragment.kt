@@ -6,22 +6,20 @@ import android.view.*
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
 import com.example.qiita_clone_android.data.repository.ArticleRepository
-import com.example.qiita_clone_android.data.repository.UserRepository
 import com.example.qiita_clone_android.databinding.FragmentWebViewBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.MainActivity
-import com.example.qiita_clone_android.ui.userList.UserListViewModel
 
 class WebViewFragment : BaseFragment() {
     private val binding by lazy { FragmentWebViewBinding.inflate(layoutInflater) }
@@ -72,6 +70,16 @@ class WebViewFragment : BaseFragment() {
 
     private fun setWebView() {
         val url = arguments?.getString(OPEN_URL) ?: ""
+        if (url.isEmpty()) {
+            val activity = activity ?: MainActivity()
+            AlertDialog.Builder(activity)
+                .setTitle("エラー")
+                .setMessage("無効なURLです")
+                .setPositiveButton("OK") { _, _ ->
+                    parentFragmentManager.popBackStack()
+                }
+                .show()
+        }
 
         webView = binding.webView
         webView.apply {
