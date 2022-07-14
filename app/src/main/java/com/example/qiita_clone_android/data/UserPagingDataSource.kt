@@ -13,18 +13,21 @@ class UserPagingDataSource(repository: UserRepository) : PagingSource<Int, User>
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, User> {
-        return try {
-            val currentKey = params.key ?: 1
-            val users = repository.fetchUsers(currentKey, params.loadSize)
-
-            LoadResult.Page(
-                data = users,
-                prevKey = (currentKey - 1).takeIf { key -> key > 0 },
-                nextKey = (currentKey + 1).takeIf { users.size == params.loadSize }
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        }
+        val currentKey = params.key ?: 1
+        return runCatching {
+            repository.fetchUsers(currentKey, params.loadSize)
+        }.fold(
+            onSuccess = { users ->
+                LoadResult.Page(
+                    data = users,
+                    prevKey = (currentKey - 1).takeIf { key -> key > 0 },
+                    nextKey = (currentKey + 1).takeIf { users.size == params.loadSize }
+                )
+            },
+            onFailure = {
+                LoadResult.Error(it)
+            }
+        )
     }
 
     override fun getRefreshKey(state: PagingState<Int, User>): Int? {
