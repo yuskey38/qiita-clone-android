@@ -12,15 +12,25 @@ import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import com.example.qiita_clone_android.R
+import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
+import com.example.qiita_clone_android.data.repository.ArticleRepository
+import com.example.qiita_clone_android.data.repository.UserRepository
 import com.example.qiita_clone_android.databinding.FragmentWebViewBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.MainActivity
+import com.example.qiita_clone_android.ui.userList.UserListViewModel
 
 class WebViewFragment : BaseFragment() {
     private val binding by lazy { FragmentWebViewBinding.inflate(layoutInflater) }
-    private val viewModel: WebViewModel by viewModels()
+    private val viewModel: WebViewModel by lazy {
+        val favoriteDao = ArticleFavoriteDao()
+        val repository = ArticleRepository(favoriteDao)
+        val factory = WebViewModel.Factory(repository)
+        ViewModelProvider(this, factory)[WebViewModel::class.java]
+    }
 
     private lateinit var webView: WebView
     private lateinit var favoriteMenuItem: MenuItem

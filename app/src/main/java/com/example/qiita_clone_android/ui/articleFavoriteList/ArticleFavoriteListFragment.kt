@@ -4,20 +4,24 @@ import android.os.Bundle
 import android.view.*
 import android.view.View.GONE
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
+import com.example.qiita_clone_android.data.repository.ArticleRepository
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.MainActivity
 import com.example.qiita_clone_android.ui.adapters.ArticleAdapter
+import com.example.qiita_clone_android.ui.articleList.ArticleListViewModel
 
 class ArticleFavoriteListFragment : BaseFragment() {
     private val binding by lazy { FragmentArticleListBinding.inflate(layoutInflater) }
-    private val viewModel: ArticleFavoriteListViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.fragmentIsReady()
+    private val viewModel: ArticleFavoriteListViewModel by lazy {
+        val favoriteDao = ArticleFavoriteDao()
+        val repository = ArticleRepository(favoriteDao)
+        val factory = ArticleFavoriteListViewModel.Factory(repository)
+        ViewModelProvider(this, factory)[ArticleFavoriteListViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -29,6 +33,11 @@ class ArticleFavoriteListFragment : BaseFragment() {
         setObservers()
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
     }
 
     private fun initViews() {

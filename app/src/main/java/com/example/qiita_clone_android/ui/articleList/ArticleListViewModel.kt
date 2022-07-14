@@ -1,16 +1,14 @@
 package com.example.qiita_clone_android.ui.articleList
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.qiita_clone_android.data.repository.ArticleRepository
 import com.example.qiita_clone_android.models.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ArticleListViewModel : ViewModel() {
-    private val repository = ArticleRepository()
+class ArticleListViewModel(
+    private val repository: ArticleRepository
+) : ViewModel() {
 
     private var _articles = MutableLiveData<List<Article>>(emptyList())
     val articles: LiveData<List<Article>>
@@ -46,6 +44,15 @@ class ArticleListViewModel : ViewModel() {
         viewModelScope.launch {
             val articles = repository.fetchArticles(query)
             setArticles(articles)
+        }
+    }
+
+    class Factory(
+        private val repository: ArticleRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
+        @Suppress("unchecked_cast")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return ArticleListViewModel(repository) as T
         }
     }
 }

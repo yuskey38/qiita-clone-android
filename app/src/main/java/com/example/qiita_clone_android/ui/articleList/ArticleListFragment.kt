@@ -8,8 +8,11 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.qiita_clone_android.R
+import com.example.qiita_clone_android.data.local.dao.article.ArticleFavoriteDao
+import com.example.qiita_clone_android.data.repository.ArticleRepository
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.models.Article
 import com.example.qiita_clone_android.ui.BaseFragment
@@ -18,7 +21,12 @@ import com.example.qiita_clone_android.ui.adapters.ArticleAdapter
 
 class ArticleListFragment : BaseFragment() {
     private val binding by lazy { FragmentArticleListBinding.inflate(layoutInflater) }
-    private val viewModel: ArticleListViewModel by viewModels()
+    private val viewModel: ArticleListViewModel by lazy {
+        val favoriteDao = ArticleFavoriteDao()
+        val repository = ArticleRepository(favoriteDao)
+        val factory = ArticleListViewModel.Factory(repository)
+        ViewModelProvider(this, factory)[ArticleListViewModel::class.java]
+    }
 
     interface ArticlesActions {
         fun onTapArticle(article: Article)

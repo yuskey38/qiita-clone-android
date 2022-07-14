@@ -3,13 +3,16 @@ package com.example.qiita_clone_android.ui.webView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.data.repository.ArticleRepository
+import com.example.qiita_clone_android.data.repository.UserRepository
 import com.example.qiita_clone_android.models.Article
+import com.example.qiita_clone_android.ui.userList.UserListViewModel
 
-class WebViewModel : ViewModel() {
-
-    private val articleRepository = ArticleRepository()
+class WebViewModel(
+    private val articleRepository: ArticleRepository
+) : ViewModel() {
 
     var selectedArticle: Article? = null
         private set
@@ -52,5 +55,14 @@ class WebViewModel : ViewModel() {
         val article = selectedArticle ?: return
         val favorite = articleRepository.getFavoriteBy(article.id)
         _favoriteIconColor.value = if (favorite == null) R.color.white else R.color.yellow
+    }
+
+    class Factory(
+        private val repository: ArticleRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
+        @Suppress("unchecked_cast")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return WebViewModel(repository) as T
+        }
     }
 }

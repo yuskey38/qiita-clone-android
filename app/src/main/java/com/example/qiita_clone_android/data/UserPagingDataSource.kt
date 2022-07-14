@@ -5,16 +5,12 @@ import androidx.paging.PagingState
 import com.example.qiita_clone_android.data.repository.UserRepository
 import com.example.qiita_clone_android.models.User
 
-class UserPagingDataSource(repository: UserRepository) : PagingSource<Int, User>() {
+class UserPagingDataSource(
+    private val repository: UserRepository
+) : PagingSource<Int, User>() {
+
     companion object {
         const val PER_PAGE = 20
-    }
-
-
-    private val repository: UserRepository
-
-    init {
-        this.repository = repository
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, User> {

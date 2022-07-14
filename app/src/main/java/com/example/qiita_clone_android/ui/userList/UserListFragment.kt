@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.qiita_clone_android.data.repository.UserRepository
 import com.example.qiita_clone_android.databinding.FragmentUserListBinding
 import com.example.qiita_clone_android.ui.BaseFragment
 import kotlinx.coroutines.flow.collectLatest
@@ -15,7 +16,11 @@ import kotlinx.coroutines.launch
 
 class UserListFragment : BaseFragment() {
     private val binding by lazy { FragmentUserListBinding.inflate(layoutInflater) }
-    private val viewModel: UserListViewModel by viewModels()
+    private val viewModel: UserListViewModel by lazy {
+        val repository = UserRepository()
+        val factory = UserListViewModel.Factory(repository)
+        ViewModelProvider(this, factory)[UserListViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
