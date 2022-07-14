@@ -8,7 +8,7 @@ class MainViewModel: ViewModel() {
     var currentFragment: BaseFragment = ArticleListFragment()
         private set
 
-    var articles: List<Article> = arrayListOf()
+    var articles: List<Article> = mutableListOf()
         private set
 
     fun setCurrentFragment(fragment: BaseFragment) {

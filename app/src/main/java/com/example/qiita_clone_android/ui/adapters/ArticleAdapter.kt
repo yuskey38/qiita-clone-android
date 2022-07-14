@@ -18,7 +18,7 @@ class ArticleAdapter(
 ) : RecyclerView.Adapter<ArticleAdapter.RecyclerViewHolder>() {
 
     private var mRecyclerView: RecyclerView? = null
-    private var _articles: List<Article> = listOf()
+    private var _articles: List<Article> = mutableListOf()
 
     fun updateArticles(newArticles: List<Article>) {
         _articles = newArticles

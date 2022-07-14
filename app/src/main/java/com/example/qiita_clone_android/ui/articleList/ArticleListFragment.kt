@@ -47,7 +47,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (activity as? MainActivity)?.saveArticles(viewModel.articles.value ?: listOf())
+        (activity as? MainActivity)?.saveArticles(viewModel.articles.value ?: emptyList())
     }
 
     private fun initViews() {
