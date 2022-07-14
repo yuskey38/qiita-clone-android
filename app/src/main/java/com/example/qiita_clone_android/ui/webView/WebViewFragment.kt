@@ -19,8 +19,7 @@ import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.MainActivity
 
 class WebViewFragment : BaseFragment() {
-
-    private lateinit var binding: FragmentWebViewBinding
+    private val binding by lazy { FragmentWebViewBinding.inflate(layoutInflater) }
     private val viewModel: WebViewModel by viewModels()
 
     override fun onCreateView(
@@ -28,8 +27,6 @@ class WebViewFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentWebViewBinding.inflate(inflater)
-
         initViews()
         initViewModel()
 
@@ -47,20 +44,20 @@ class WebViewFragment : BaseFragment() {
     }
 
     private fun setWebView() {
-        val webView = binding.webView
-        webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(
-                view: WebView?,
-                request: WebResourceRequest?
-            ): Boolean {
-                viewModel.setShowFavoriteIcon(view?.originalUrl == request?.url.toString())
-                activity?.invalidateOptionsMenu()
-                return super.shouldOverrideUrlLoading(view, request)
-            }
-        }
-
         val url = arguments?.getString(OPEN_URL) ?: ""
-        webView.loadUrl(url)
+
+        binding.webView.apply {
+            webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
+                    viewModel.setShowFavoriteIcon(view?.originalUrl == request?.url.toString())
+                    activity?.invalidateOptionsMenu()
+                    return super.shouldOverrideUrlLoading(view, request)
+                }
+            }
+        }.loadUrl(url)
     }
 
     private fun setOptionsMenu() {
@@ -93,7 +90,6 @@ class WebViewFragment : BaseFragment() {
 
     private fun onTapShare() {
         val webView = binding.webView
-
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             type = "text/plain"

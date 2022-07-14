@@ -11,46 +11,48 @@ import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.CropCircleTransformation
 
 class UserPagingAdapter :
-    PagingDataAdapter<User, UserPagingAdapter.UsersViewHolder>(UsersComparator) {
+    PagingDataAdapter<User, UserPagingAdapter.ViewHolder>(Comparator) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): UsersViewHolder {
-        return UsersViewHolder(
+    ): ViewHolder {
+        return ViewHolder(
             UserListItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )
     }
 
-    override fun onBindViewHolder(holder: UsersViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        item?.let { holder.bindUser(it) }
+        item?.let { holder.bind(it) }
     }
 
-    inner class UsersViewHolder(private val binding: UserListItemBinding) :
+    inner class ViewHolder(private val binding: UserListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bindUser(item: User) = with(binding) {
-            Picasso.get().load(item.profileImageUrl)
-                .transform(CropCircleTransformation())
-                .fit()
-                .into(profileImage)
-            userId.text = "@${item.id}"
+        fun bind(item: User) {
+            binding.apply {
+                userId.text = "@${item.id}"
+                githubAccount.text = "GitHub: ${unwrappedText(item.githubLoginName)}"
+                twitterAccount.text = "Twitter: ${unwrappedText(item.twitterScreenName)}"
+                facebookAccount.text = "Facebook: ${unwrappedText(item.facebookId)}"
+                linkedInAccount.text = "LinkedIn: ${unwrappedText(item.linkedinId)}"
+            }.let {
+                Picasso.get().load(item.profileImageUrl)
+                    .transform(CropCircleTransformation())
+                    .fit()
+                    .into(it.profileImage)
+            }
+        }
 
-            githubAccount.text = "GitHub: ${unwrappedText(item.githubLoginName)}"
-            twitterAccount.text = "Twitter: ${unwrappedText(item.twitterScreenName)}"
-            facebookAccount.text = "Facebook: ${unwrappedText(item.facebookId)}"
-            linkedInAccount.text = "LinkedIn: ${unwrappedText(item.linkedinId)}"
+        private fun unwrappedText(text: String?): String {
+            return if (text.isNullOrEmpty()) "None" else text
         }
     }
 
-    private fun unwrappedText(text: String?): String {
-        return if (text.isNullOrEmpty()) "None" else text
-    }
-
-    object UsersComparator : DiffUtil.ItemCallback<User>() {
+    object Comparator : DiffUtil.ItemCallback<User>() {
         override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
             return oldItem.id == newItem.id
         }

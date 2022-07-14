@@ -11,9 +11,8 @@ import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.MainActivity
 import com.example.qiita_clone_android.ui.adapters.ArticleAdapter
 
-class ArticleFavoriteListFragment : BaseFragment(),
-    ArticleAdapter.RecyclerViewHolder.ItemClickListener {
-    private lateinit var binding: FragmentArticleListBinding
+class ArticleFavoriteListFragment : BaseFragment() {
+    private val binding by lazy { FragmentArticleListBinding.inflate(layoutInflater) }
     private val viewModel: ArticleFavoriteListViewModel by viewModels()
 
     override fun onCreateView(
@@ -21,8 +20,6 @@ class ArticleFavoriteListFragment : BaseFragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentArticleListBinding.inflate(inflater)
-
         viewModel.loadArticles()
 
         initViews()
@@ -46,27 +43,21 @@ class ArticleFavoriteListFragment : BaseFragment(),
     }
 
     private fun setRecyclerView() {
-        val recyclerView = binding.articleList
-        val adapter = ArticleAdapter(
-            binding.root.context,
-            this,
-        )
-        val layoutManager =
-            LinearLayoutManager(
+        binding.articleList.apply {
+            adapter = ArticleAdapter(object : ArticleAdapter.ItemClickListener {
+                    override fun onItemClick(view: View, article: Article) {
+                        (activity as? MainActivity)?.onTapArticle(article)
+                    }
+                }
+            )
+            layoutManager = LinearLayoutManager(
                 binding.root.context, LinearLayoutManager.VERTICAL, false
             )
-
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = layoutManager
+        }
     }
 
     private fun updateArticles(articles: List<Article>) {
-        val recyclerView = binding.articleList
-        val adapter = recyclerView.adapter as ArticleAdapter
-        adapter.updateArticles(articles)
-    }
-
-    override fun onItemClick(view: View, article: Article) {
-        (activity as? MainActivity)?.onTapArticle(article)
+        val adapter = binding.articleList.adapter as ArticleAdapter
+        adapter.submitList(articles)
     }
 }

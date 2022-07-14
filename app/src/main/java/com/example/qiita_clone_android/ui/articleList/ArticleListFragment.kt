@@ -9,7 +9,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.transition.Visibility
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.databinding.FragmentArticleListBinding
 import com.example.qiita_clone_android.models.Article
@@ -17,8 +16,8 @@ import com.example.qiita_clone_android.ui.BaseFragment
 import com.example.qiita_clone_android.ui.MainActivity
 import com.example.qiita_clone_android.ui.adapters.ArticleAdapter
 
-class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.ItemClickListener {
-    private lateinit var binding: FragmentArticleListBinding
+class ArticleListFragment : BaseFragment() {
+    private val binding by lazy { FragmentArticleListBinding.inflate(layoutInflater) }
     private val viewModel: ArticleListViewModel by viewModels()
 
     interface ArticlesActions {
@@ -37,8 +36,6 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentArticleListBinding.inflate(inflater)
-
         initViews()
         setObservers()
 
@@ -94,18 +91,16 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
     private fun setRecyclerView() {
         setPullToRefresh()
 
-        val recyclerView = binding.articleList
-        val adapter = ArticleAdapter(
-            binding.root.context,
-            this,
-        )
-        val layoutManager =
-            LinearLayoutManager(
+        binding.articleList.apply {
+            adapter = ArticleAdapter(object : ArticleAdapter.ItemClickListener {
+                override fun onItemClick(view: View, article: Article) {
+                    (activity as? MainActivity)?.onTapArticle(article)
+                }
+            })
+            layoutManager = LinearLayoutManager(
                 binding.root.context, LinearLayoutManager.VERTICAL, false
             )
-
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = layoutManager
+        }
     }
 
     private fun setPullToRefresh() {
@@ -118,12 +113,7 @@ class ArticleListFragment : BaseFragment(), ArticleAdapter.RecyclerViewHolder.It
         binding.refreshContainer.isRefreshing = false
         binding.loading.visibility = GONE
 
-        val recyclerView = binding.articleList
-        val adapter = recyclerView.adapter as ArticleAdapter
-        adapter.updateArticles(articles)
-    }
-
-    override fun onItemClick(view: View, article: Article) {
-        (activity as? MainActivity)?.onTapArticle(article)
+        val adapter = binding.articleList.adapter as ArticleAdapter
+        adapter.submitList(articles)
     }
 }
