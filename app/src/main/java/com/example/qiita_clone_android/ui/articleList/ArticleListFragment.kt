@@ -22,13 +22,13 @@ class ArticleListFragment : BaseFragment() {
 
     interface ArticlesActions {
         fun onTapArticle(article: Article)
-        fun saveArticles(articles: List<Article>)
+        fun onDestroyView(articles: List<Article>)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val articles = (activity as? MainActivity)?.viewModel?.articles
-        viewModel.setArticles(articles)
+        if (articles.isNullOrEmpty()) viewModel.fragmentIsReady() else viewModel.fragmentIsReadyWith(articles)
     }
 
     override fun onCreateView(
@@ -44,7 +44,7 @@ class ArticleListFragment : BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (activity as? MainActivity)?.saveArticles(viewModel.articles.value ?: emptyList())
+        (activity as? MainActivity)?.onDestroyView(viewModel.articles.value ?: emptyList())
     }
 
     private fun initViews() {
@@ -70,13 +70,13 @@ class ArticleListFragment : BaseFragment() {
                     menu.findItem(R.id.action_search).actionView as SearchView
                 searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextChange(newText: String): Boolean {
-                        viewModel.updateQuery(newText)
+                        viewModel.onQueryChange(newText)
                         return false
                     }
 
                     override fun onQueryTextSubmit(query: String): Boolean {
                         binding.loading.visibility = VISIBLE
-                        viewModel.setArticles(null)
+                        viewModel.onQuerySubmit()
                         return false
                     }
                 })
@@ -105,7 +105,7 @@ class ArticleListFragment : BaseFragment() {
 
     private fun setPullToRefresh() {
         binding.refreshContainer.setOnRefreshListener {
-            viewModel.setArticles(null)
+            viewModel.pullToRefresh()
         }
     }
 

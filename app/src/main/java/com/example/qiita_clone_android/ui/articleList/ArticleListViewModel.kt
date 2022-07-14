@@ -18,17 +18,34 @@ class ArticleListViewModel : ViewModel() {
 
     private var query: String? = null
 
-    fun setArticles(articles: List<Article>?) {
-        if (articles.isNullOrEmpty()) {
-            viewModelScope.launch {
-                _articles.value = repository.fetchArticles(query)
-            }
-        } else {
-            _articles.value = articles
-        }
+    fun fragmentIsReadyWith(articles: List<Article>) {
+        setArticles(articles)
     }
 
-    fun updateQuery(query: String) {
+    fun fragmentIsReady() {
+        fetchArticles()
+    }
+
+    fun onQueryChange(query: String) {
         this.query = query
+    }
+
+    fun onQuerySubmit() {
+        fetchArticles()
+    }
+
+    fun pullToRefresh() {
+        fetchArticles()
+    }
+
+    private fun setArticles(articles: List<Article>?) {
+        _articles.value = articles
+    }
+
+    private fun fetchArticles() {
+        viewModelScope.launch {
+            val articles = repository.fetchArticles(query)
+            setArticles(articles)
+        }
     }
 }

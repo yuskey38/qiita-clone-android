@@ -22,13 +22,22 @@ class WebViewFragment : BaseFragment() {
     private val binding by lazy { FragmentWebViewBinding.inflate(layoutInflater) }
     private val viewModel: WebViewModel by viewModels()
 
+    private lateinit var webView: WebView
+    private lateinit var favoriteMenuItem: MenuItem
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val article = arguments?.getSerializable(SELECTED_ARTICLE) as? Article?
+        viewModel.fragmentIsReadyWith(article)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         initViews()
-        initViewModel()
+        setObservers()
 
         return binding.root
     }
@@ -38,22 +47,30 @@ class WebViewFragment : BaseFragment() {
         setOptionsMenu()
     }
 
-    private fun initViewModel() {
-        val article = arguments?.getSerializable(SELECTED_ARTICLE) as? Article?
-        viewModel.setSelectedArticle(article)
+    private fun setObservers() {
+        viewModel.favoriteIconColor.observe(viewLifecycleOwner) {
+            val drawableWrap = DrawableCompat.wrap(favoriteMenuItem.icon).mutate()
+            DrawableCompat.setTint(drawableWrap, ResourcesCompat.getColor(resources, it, null))
+            favoriteMenuItem.icon = drawableWrap
+            favoriteMenuItem.isVisible = viewModel.showFavoriteIcon.value!!
+        }
+
+        viewModel.showFavoriteIcon.observe(viewLifecycleOwner) {
+            activity?.invalidateOptionsMenu()
+        }
     }
 
     private fun setWebView() {
         val url = arguments?.getString(OPEN_URL) ?: ""
 
-        binding.webView.apply {
+        webView = binding.webView
+        webView.apply {
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
                     view: WebView?,
                     request: WebResourceRequest?
                 ): Boolean {
-                    viewModel.setShowFavoriteIcon(view?.originalUrl == request?.url.toString())
-                    activity?.invalidateOptionsMenu()
+                    viewModel.shouldOverrideUrlLoading(view?.originalUrl.toString(), request?.url.toString())
                     return super.shouldOverrideUrlLoading(view, request)
                 }
             }
@@ -67,29 +84,27 @@ class WebViewFragment : BaseFragment() {
         activity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.webview_menu, menu)
-
-                setFavoriteIcon(menu.findItem(R.id.action_favorite))
+                favoriteMenuItem = menu.findItem(R.id.action_favorite)
+                viewModel.onCreateMenu()
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when (menuItem.itemId) {
                     android.R.id.home -> parentFragmentManager.popBackStack()
                     R.id.action_share -> onTapShare()
-                    R.id.action_favorite -> onTapFavorite(menuItem)
+                    R.id.action_favorite -> viewModel.onTapFavorite()
                 }
                 return false
             }
 
             override fun onPrepareMenu(menu: Menu) {
                 super.onPrepareMenu(menu)
-                val favorite = menu.findItem(R.id.action_favorite)
-                setFavoriteIcon(favorite)
+                viewModel.onPrepareMenu()
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun onTapShare() {
-        val webView = binding.webView
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             type = "text/plain"
@@ -100,19 +115,6 @@ class WebViewFragment : BaseFragment() {
 
         val shareIntent = Intent.createChooser(sendIntent, null)
         startActivity(shareIntent)
-    }
-
-    private fun onTapFavorite(item: MenuItem) {
-        viewModel.switchFavorite()
-        setFavoriteIcon(item)
-    }
-
-    private fun setFavoriteIcon(item: MenuItem) {
-        val iconColor = viewModel.getFavoriteIconColor()
-        val drawableWrap = DrawableCompat.wrap(item.icon).mutate()
-        DrawableCompat.setTint(drawableWrap, ResourcesCompat.getColor(resources, iconColor, null))
-        item.icon = drawableWrap
-        item.isVisible = viewModel.showFavoriteIcon
     }
 
     companion object {

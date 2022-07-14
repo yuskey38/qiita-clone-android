@@ -27,10 +27,8 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun transitionTo(to: BaseFragment) {
-        viewModel.setCurrentFragment(to)
-
         supportFragmentManager.beginTransaction()
-            .replace(R.id.main_activity_content, viewModel.currentFragment)
+            .replace(R.id.main_activity_content, to)
             .addToBackStack(null)
             .commit()
     }
@@ -40,7 +38,7 @@ class MainActivity : AppCompatActivity(),
         supportActionBar?.title = ""
 
         supportFragmentManager.addOnBackStackChangedListener {
-            viewModel.setCurrentFragment(
+            viewModel.transitionTo(
                 supportFragmentManager.findFragmentById(R.id.main_activity_content) as BaseFragment)
         }
     }
@@ -75,7 +73,7 @@ class MainActivity : AppCompatActivity(),
         transitionTo(WebViewFragment.newInstance(article.url, article))
     }
 
-    override fun saveArticles(articles: List<Article>) {
-        viewModel.setArticles(articles)
+    override fun onDestroyView(articles: List<Article>) {
+        viewModel.onDestroyArticleListView(articles)
     }
 }

@@ -15,7 +15,7 @@ class ArticleFavoriteListViewModel : ViewModel() {
     val articles: LiveData<List<Article>>
         get() = _articles
 
-    fun loadArticles() {
+    fun fragmentIsReady() {
         val articles = articleRepository.getAllFavorites()
         _articles.postValue(articles)
     }

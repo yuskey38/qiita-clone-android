@@ -15,13 +15,16 @@ class ArticleFavoriteListFragment : BaseFragment() {
     private val binding by lazy { FragmentArticleListBinding.inflate(layoutInflater) }
     private val viewModel: ArticleFavoriteListViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.fragmentIsReady()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel.loadArticles()
-
         initViews()
         setObservers()
 

@@ -1,5 +1,7 @@
 package com.example.qiita_clone_android.ui.webView
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.qiita_clone_android.R
 import com.example.qiita_clone_android.data.repository.ArticleRepository
@@ -12,18 +14,30 @@ class WebViewModel : ViewModel() {
     var selectedArticle: Article? = null
         private set
 
-    var showFavoriteIcon: Boolean = true
-        private set
+    private var _showFavoriteIcon: MutableLiveData<Boolean> = MutableLiveData(true)
+    val showFavoriteIcon: LiveData<Boolean>
+        get() = _showFavoriteIcon
 
-    fun setSelectedArticle(article: Article?) {
+    private var _favoriteIconColor: MutableLiveData<Int> = MutableLiveData()
+    val favoriteIconColor: LiveData<Int>
+        get() = _favoriteIconColor
+
+    fun fragmentIsReadyWith(article: Article?) {
         selectedArticle = article
     }
 
-    fun setShowFavoriteIcon(isShow: Boolean) {
-        showFavoriteIcon = isShow
+    fun onCreateMenu() {
+        setFavoriteIconColor()
+    }
+    fun onPrepareMenu() {
+        setFavoriteIconColor()
     }
 
-    fun switchFavorite() {
+    fun shouldOverrideUrlLoading(originalUrl: String, loadingUrl: String) {
+        _showFavoriteIcon.value = originalUrl == loadingUrl
+    }
+
+    fun onTapFavorite() {
         val article = selectedArticle ?: return
         val favorite = articleRepository.getFavoriteBy(article.id)
         if (favorite == null) {
@@ -31,11 +45,12 @@ class WebViewModel : ViewModel() {
         } else {
             articleRepository.removeFavorite(article)
         }
+        setFavoriteIconColor()
     }
 
-    fun getFavoriteIconColor(): Int {
-        val article = selectedArticle ?: return R.color.white
+    private fun setFavoriteIconColor() {
+        val article = selectedArticle ?: return
         val favorite = articleRepository.getFavoriteBy(article.id)
-        return if (favorite == null) R.color.white else R.color.yellow
+        _favoriteIconColor.value = if (favorite == null) R.color.white else R.color.yellow
     }
 }

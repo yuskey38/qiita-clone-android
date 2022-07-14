@@ -8,14 +8,14 @@ class MainViewModel: ViewModel() {
     var currentFragment: BaseFragment = ArticleListFragment()
         private set
 
-    var articles: List<Article> = mutableListOf()
+    var articles: List<Article> = emptyList()
         private set
 
-    fun setCurrentFragment(fragment: BaseFragment) {
+    fun transitionTo(fragment: BaseFragment) {
         this.currentFragment = fragment
     }
 
-    fun setArticles(articles: List<Article>) {
+    fun onDestroyArticleListView(articles: List<Article>) {
         this.articles = articles
     }
 }
