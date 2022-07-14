@@ -31,8 +31,4 @@ class ArticleRepository {
     fun removeFavorite(article: Article) {
         articleFavoriteDao.delete(article)
     }
-
-    fun clearFavorites() {
-        articleFavoriteDao.clear()
-    }
 }

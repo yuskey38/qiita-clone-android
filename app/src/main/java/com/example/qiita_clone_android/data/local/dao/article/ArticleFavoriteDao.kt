@@ -39,12 +39,4 @@ class ArticleFavoriteDao {
             }
         }
     }
-
-    fun clear() {
-        val realm: Realm = Realm.open(config)
-        realm.writeBlocking {
-            val articles = this.query<ArticleFavoriteEntity>().find()
-            delete(articles)
-        }
-    }
 }
